@@ -6,6 +6,7 @@ const { MONGOURI } = require('./keys')
 const fileUpload = require('express-fileupload')
 
 mongoose.connect(MONGOURI,{
+    useFindAndModify: false,
     useNewUrlParser:true,
     useUnifiedTopology:true
 })

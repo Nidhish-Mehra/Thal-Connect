@@ -9,6 +9,10 @@ import Profile from './components/profile';
 import {reducer,initialState} from './reducers/userReducer'
 import Patients from './components/patients';
 import Info from './components/auth/info';
+import EditDonor from './components/EditDonor';
+import EditPatient from './components/EditPatient';
+import AddDonor from './components/AddDonor';
+import AddPatient from './components/AddPatient';
 
 export const UserContext = createContext()
 
@@ -48,6 +52,18 @@ const Routing=()=>{
 
         <Route path="/info/:id">
           <Info />
+        </Route>
+        <Route path="/editPatient/:id">
+          <EditPatient />
+        </Route>
+        <Route path="/editDonor/:id">
+          <EditDonor />
+        </Route>
+        <Route path="/addDonor">
+          <AddDonor />
+        </Route>
+        <Route path="/addPatient">
+          <AddPatient />
         </Route>
     </Switch>
 

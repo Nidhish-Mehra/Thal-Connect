@@ -8,8 +8,8 @@ function Navbar() {
   const renderList = () =>{
     if(state){
       return[
-        <li><Link to="/profile">Upload</Link></li>,
-        <li><Link to="/allPatients">Patients</Link></li>,
+        <li><Link to="/profile">Add Users</Link></li>,
+        <li><Link to="/allPatients">All Users</Link></li>,
         <li><a onClick={()=>{
           localStorage.clear()
           dispatch({type:"CLEAR"})

@@ -77,14 +77,33 @@ router.get('/allPatients',requireSignin, async (req,res)=>{
     }
 })
 
-router.post('/filteredPatient',requireSignin, async (req,res)=>{
-    const { type } = req.body
+router.get('/allDonors',requireSignin, async (req,res)=>{
     try {
-        const patients = await Patient.find({hospital:type});
-        res.status(200).json(patients)
+        const donors = await Donor.find();
+        res.status(200).json(donors)
     } catch (error) {
         res.status(404).json({error:error.message})
     }
+})
+
+router.put('/getPatient',requireSignin, (req,res)=>{ 
+      Patient.findOne({ProjectID:req.body.ProjectID})
+      .then(patient=>{
+          console.log(patient)
+          res.json(patient)
+      }).catch(error=>{
+          console.log(error)
+      })
+ })
+
+ router.put('/getDonor',requireSignin, (req,res)=>{ 
+    Donor.findOne({BloodDonorID:req.body.ProjectID})
+    .then(donor=>{
+        console.log(donor)
+        res.json(donor)
+    }).catch(error=>{
+        console.log(error)
+    })
 })
 
 router.put('/donorlist',requireSignin, (req,res)=>{ 
@@ -96,5 +115,100 @@ router.put('/donorlist',requireSignin, (req,res)=>{
           console.log(error)
       })
  })
+
+router.put('/updateDonor',requireSignin, (req,res)=>{ 
+    console.log(req.body)
+      Donor.findOneAndUpdate({BloodDonorID:req.body.BloodDonorID},{
+        DonorName:req.body.donorName,
+        ContactNumber:req.body.contact,
+        Address:req.body.address
+      },{new:true})
+      .exec((error,result)=>{
+          if(error){
+              return res.status(422).json({error:error})
+          }else{
+            res.json({message:"Updated Donor"})
+          }
+      })
+    })
+
+router.put('/updatePatient',requireSignin, (req,res)=>{ 
+      Patient.findOneAndUpdate({ProjectID:req.body.ProjectID},{
+        Hospital:req.body.hospital,
+        PatientAge:req.body.patientAge,
+        LastTransfusion:req.body.LastTransfusion,
+        NextTransfusion:req.body.NextTransfusion
+      },{new:true})
+      .exec((error,result)=>{
+        if(error){
+            return res.status(422).json({error:error})
+        }else{
+          res.json({message:"Updated Patient"})
+        }
+    })
+ })
+
+ router.post('/addDonor',requireSignin,(req,res)=>{
+    const { donorID, donorName, contact, address, projectId } = req.body
+    if(!donorID || !donorName || !contact || !address || !projectId){
+        return res.status(422).json({error:"please add all the fields"})
+    }
+    Donor.findOne({BloodDonorID:donorID})
+    .then((savedUser)=>{
+        if(savedUser){
+            return res.status(422).json({error:"Donor already exists"})
+        }
+            const donor = new Donor({
+                BloodDonorID:donorID,
+                DonorName:donorName,
+                ContactNumber:contact,
+                Address:address,
+                ProjectID:projectId
+            })
+            donor.save()
+            .then(donor=>{
+                res.json({message:"saved successfully"})
+            })
+            .catch(error=>{
+                console.log(error)
+            })
+    })
+    .catch(error=>{
+        console.log(error)
+    }) 
+})
+
+ router.post('/addPatient',requireSignin,(req,res)=>{
+    const {  patientProjectID, hospital, patientAge, gender, NOTRLY, LastTransfusion, NextTransfusion } = req.body
+    if(!patientProjectID || !hospital || !patientAge || !gender || !NOTRLY || !LastTransfusion || !NextTransfusion){
+        return res.status(422).json({error:"please add all the fields"})
+    }
+    Patient.findOne({ProjectID:patientProjectID})
+    .then((savedUser)=>{
+        if(savedUser){
+            return res.status(422).json({error:"Patient already exists"})
+        }
+            const patient = new Patient({
+                ProjectID:patientProjectID,
+                Hospital:hospital,
+                PatientAge:patientAge,
+                Sex:gender,
+                NOTRLY:NOTRLY,
+                LastTransfusion:LastTransfusion,
+                NextTransfusion:NextTransfusion
+            })
+            patient.save()
+            .then(donor=>{
+                res.json({message:"saved successfully"})
+            })
+            .catch(error=>{
+                console.log(error)
+            })
+    })
+    .catch(error=>{
+        console.log(error)
+    }) 
+})
+
 
 module.exports = router
